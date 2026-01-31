@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academy Premium Portal</title>
+    <style>
+        :root {
+            --primary: #9b111e;
+            --primary-hover: #7a0d17;
+            --bg: #d6d8db;
+            --sidebar-bg: #e2e4e7;
+            --card-bg: #f1f3f5;
+            --text-main: #2c2e31;
+            --text-muted: #5a5f66;
+            --border: rgba(0, 0, 0, 0.15);
+            --radius: 24px;
+            --toggle-bg: #bdc3c7;
+        }
+
+        body.dark {
+            --bg: #0d0e10;
+            --sidebar-bg: #121214;
+            --card-bg: #1c1e21;
+            --text-main: #d1d5db;
+            --text-muted: #9ca3af;
+            --border: rgba(255, 255, 255, 0.08);
+            --toggle-bg: #2c3e50;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -320px;
+            top: 0;
+            bottom: 0;
+            width: 320px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar.active {
+            transform: translateX(320px);
+            box-shadow: 20px 0 60px rgba(0,0,0,0.15);
+        }
+
+        .side-trigger {
+            position: absolute;
+            right: -44px;
+            top: 40px;
+            width: 44px;
+            height: 44px;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .arrow-icon {
+            width: 8px;
+            height: 8px;
+            border-left: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            transform: rotate(225deg);
+            transition: transform 0.4s ease;
+        }
+
+        .sidebar.active .arrow-icon { transform: rotate(45deg); }
+
+        .lesson-list { flex: 1; overflow-y: auto; margin-top: 20px; }
+
+        .lesson-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(0,0,0,0.04);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        body.dark .lesson-item { background: rgba(255,255,255,0.02); }
+        .lesson-item:hover { border-color: var(--primary); background: rgba(0,0,0,0.08); }
+
+        .theme-switch-wrapper {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .theme-switch-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        .main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .hero-card {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 40px;
+            max-width: 480px;
+            width: 100%;
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        }
+
+        .hero-card h1 { font-size: 40px; margin: 10px 0; color: var(--primary); font-weight: 800; }
+        .hero-card p { color: var(--text-muted); line-height: 1.6; margin-bottom: 35px; }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { padding: 16px; border-radius: 16px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; }
+        .btn-new { background: var(--primary); color: white; }
+        .btn-new:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        
+        /* Исправленный блок кнопки "Предыдущий" */
+        .btn-prev { 
+            background: transparent; 
+            color: var(--text-main); 
+            border: 2px solid var(--border); 
+        }
+        .btn-prev:hover { 
+            border-color: var(--primary); 
+            color: var(--primary); 
+            background: rgba(155, 17, 30, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 999; }
+        .overlay.active { display: block; }
+
+        @media (max-width: 600px) {
+            .hero-card { padding: 35px 20px; }
+            .btn-group { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="dark">
+
+<div class="sidebar" id="sidebar">
+    <div class="side-trigger" onclick="toggleSidebar()">
+        <div class="arrow-icon"></div>
+    </div>
+    <h2 style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Архив материалов</h2>
+    <div class="lesson-list" id="lessonList"></div>
+    
+    <div class="theme-switch-wrapper">
+        <span class="theme-switch-label">Ночной режим</span>
+        <label class="theme-switch">
+            <input type="checkbox" id="themeCheckbox" checked onchange="document.body.classList.toggle('dark')">
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="main">
+    <div class="hero-card">
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">ПОРТАЛ ACADEMY</span>
+        <h1>Центр знаний</h1>
+        <p>Интеллектуальная система доступа к обучающим материалам. Выберите нужный урок для начала работы.</p>
+        
+        <div class="btn-group">
+            <button class="btn btn-new" onclick="openByDate(0)">Последний</button>
+            <button class="btn btn-prev" onclick="openByDate(1)">Предыдущий</button>
+        </div>
+        <div id="status" style="margin-top: 30px; font-size: 10px; font-family: monospace; color: var(--text-muted); text-transform: uppercase;">Система: Онлайн</div>
+    </div>
+</div>
+
+<script>
+    const REPO_URL = "https://github.com/DailyWork-web/test-repository";
+    const FOLDER_URL = "https://github.com/DailyWork-web/test-repository/tree/main/%D1%83%D1%80%D0%BE%D0%BA%D0%B8";
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+
+    function parseUrls(repo, folder) {
+        const rParts = repo.replace(/\/$/, "").split('/');
+        const owner = rParts[rParts.length - 2];
+        const repoName = rParts[rParts.length - 1];
+        const fMatch = folder.match(/\/tree\/[^\/]+\/(.+)$/);
+        return { owner, repo: repoName, path: fMatch ? decodeURIComponent(fMatch[1]) : "" };
+    }
+
+    const config = parseUrls(REPO_URL, FOLDER_URL);
+
+    async function loadFiles() {
+        const list = document.getElementById('lessonList');
+        try {
+            const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${encodeURIComponent(config.path)}`);
+            const files = await res.json();
+            list.innerHTML = '';
+            files.filter(f => f.type === 'file').forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'lesson-item';
+                item.innerText = file.name;
+                item.onclick = () => { window.open(file.download_url, '_blank'); toggleSidebar(); };
+                list.appendChild(item);
+            });
+        } catch (e) { list.innerHTML = 'Ошибка загрузки'; }
+    }
+
+    async function openByDate(index) {
+        const status = document.getElementById('status');
+        status.innerText = "Система: Поиск...";
+        try {
+            const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/commits?path=${encodeURIComponent(config.path)}&per_page=10`);
+            const commits = await res.json();
+            let found = [];
+            let seen = new Set();
+            for (let c of commits) {
+                const d = await (await fetch(c.url)).json();
+                for (let f of d.files) {
+                    if (f.filename.startsWith(config.path) && !seen.has(f.filename)) {
+                        seen.add(f.filename);
+                        found.push(f);
+                    }
+                }
+                if (found.length > index + 1) break;
+            }
+            if (found[index]) {
+                window.open(found[index].raw_url, '_blank');
+                status.innerText = "Система: Файл открыт";
+            } else { status.innerText = "Система: Не найдено"; }
+        } catch (e) { status.innerText = "Система: Ошибка"; }
+    }
+
+    loadFiles();
+</script>
+
+</body>
+</html>
