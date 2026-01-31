@@ -6,44 +6,42 @@
     <title>Academy Premium Portal</title>
     <style>
         :root {
-            /* Светлая тема — матовый пепел и рубин */
             --primary: #9b111e;
             --primary-hover: #7a0d17;
             --bg: #d6d8db;
             --sidebar-bg: #e2e4e7;
             --card-bg: #f1f3f5;
-            --text-main: #2c2e31;
-            --text-muted: #5a5f66;
-            --border: rgba(0, 0, 0, 0.15);
+            --text-main: #1d1d1f;
+            --text-muted: #6e6e73;
+            --border: rgba(0, 0, 0, 0.12);
+            --radius: 24px;
             --toggle-bg: #bdc3c7;
         }
 
         body.dark {
-            /* Темная тема */
-            --primary: #c41220;
-            --primary-hover: #a00e1a;
             --bg: #0d0e10;
             --sidebar-bg: #121214;
             --card-bg: #1c1e21;
-            --text-main: #d1d5db;
-            --text-muted: #9ca3af;
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
             --border: rgba(255, 255, 255, 0.08);
-            --toggle-bg: #2c3e50;
+            --toggle-bg: #3a3a3c;
         }
 
         body {
             margin: 0;
             display: flex;
             height: 100vh;
-            width: 100vw;
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
-            transition: background 0.5s ease;
+            transition: background 0.4s ease;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.015em;
         }
 
-        /* --- БОКОВАЯ ПАНЕЛЬ (Исправлено позиционирование) --- */
+        /* --- БОКОВАЯ ПАНЕЛЬ --- */
         .sidebar {
             position: fixed;
             top: 0;
@@ -53,36 +51,33 @@
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
             z-index: 1000;
-            /* Сдвигаем всю панель влево на её ширину */
             transform: translateX(-300px);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-            padding: 30px 20px;
+            padding: 40px 20px;
             box-sizing: border-box;
         }
 
         .sidebar.active {
             transform: translateX(0);
-            box-shadow: 20px 0 60px rgba(0,0,0,0.2);
+            box-shadow: 20px 0 50px rgba(0,0,0,0.15);
         }
 
-        /* Кнопка-триггер (теперь точно внутри и привязана) */
         .side-trigger {
             position: absolute;
-            right: -40px; /* Выходит за пределы панели */
-            top: 30px;
-            width: 40px;
-            height: 40px;
+            right: -44px;
+            top: 40px;
+            width: 44px;
+            height: 44px;
             background: var(--sidebar-bg);
             border: 1px solid var(--border);
             border-left: none;
-            border-radius: 0 10px 10px 0;
+            border-radius: 0 12px 12px 0;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
         }
 
         .arrow-icon {
@@ -93,15 +88,13 @@
             transform: rotate(225deg);
             transition: transform 0.4s ease;
         }
+        .sidebar.active .arrow-icon { transform: rotate(45deg); }
 
-        .sidebar.active .arrow-icon {
-            transform: rotate(45deg);
-        }
-
-        /* --- КОНТЕНТ ПАНЕЛИ --- */
         .lesson-list { flex: 1; overflow-y: auto; margin-top: 20px; }
+        
+        /* ВЫРАВНИВАНИЕ В ПЛАШКАХ ПО ЛЕВОМУ КРАЮ */
         .lesson-item {
-            padding: 12px 15px;
+            padding: 14px 18px;
             margin-bottom: 8px;
             background: rgba(0,0,0,0.04);
             border-radius: 12px;
@@ -109,95 +102,89 @@
             font-size: 14px;
             transition: 0.2s;
             border: 1px solid transparent;
+            text-align: left; /* Левый край */
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
         }
         body.dark .lesson-item { background: rgba(255,255,255,0.03); }
-        .lesson-item:hover { border-color: var(--primary); background: rgba(0,0,0,0.08); }
+        .lesson-item:hover { border-color: var(--primary); background: rgba(0,0,0,0.06); }
 
-        /* Переключатель темы */
+        /* --- ПЕРЕКЛЮЧАТЕЛЬ --- */
         .theme-switch-wrapper {
             margin-top: auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 0 10px 0;
+            padding: 20px 5px;
             border-top: 1px solid var(--border);
         }
-        .theme-switch { position: relative; width: 44px; height: 22px; }
+        .theme-switch { position: relative; width: 48px; height: 24px; }
         .theme-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider { position: absolute; inset: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; cursor: pointer; }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
         input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(22px); }
+        input:checked + .slider:before { transform: translateX(24px); }
 
         /* --- ГЛАВНАЯ КАРТОЧКА --- */
-        .main { 
-            flex: 1; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 20px; 
-            width: 100%;
-            height: 100%;
-        }
-
+        .main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .hero-card {
             background: var(--card-bg);
-            padding: clamp(30px, 5vw, 60px);
-            border-radius: clamp(20px, 4vw, 40px);
+            padding: clamp(30px, 5vw, 55px);
+            border-radius: 40px;
             max-width: 480px;
             width: 100%;
             border: 1px solid var(--border);
             box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+            text-align: left; /* Теперь тоже по левому краю */
         }
 
         .hero-card h1 { 
-            font-size: clamp(28px, 7vw, 42px); 
+            font-size: clamp(28px, 8vw, 40px); 
             margin: 10px 0; 
             color: var(--primary); 
             font-weight: 800; 
+            letter-spacing: -0.03em;
+            text-align: left;
         }
 
         .hero-card p { 
             font-size: clamp(14px, 4vw, 16px);
             color: var(--text-muted); 
-            line-height: 1.6; 
-            margin-bottom: 30px; 
+            line-height: 1.5; 
+            margin-bottom: 35px; 
+            text-align: left;
         }
 
+        /* --- КНОПКИ --- */
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
         .btn { 
             padding: 16px; 
-            border-radius: 14px; 
+            border-radius: 16px; 
             font-size: 13px; 
             font-weight: 700; 
             cursor: pointer; 
             border: none; 
-            transition: 0.3s ease; 
+            transition: all 0.3s ease; 
             text-transform: uppercase; 
+            text-align: center; /* Текст на самих кнопках лучше оставить по центру */
         }
-
         .btn-new { background: var(--primary); color: white; }
         .btn-new:hover { background: var(--primary-hover); transform: translateY(-2px); }
         
         .btn-prev { background: transparent; color: var(--text-main); border: 2px solid var(--border); }
         .btn-prev:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
 
-        .overlay { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.4); 
-            backdrop-filter: blur(4px); 
-            z-index: 999; 
-        }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 999; }
         .overlay.active { display: block; }
 
-        /* Мобильные фиксы */
         @media (max-width: 600px) {
+            .hero-card { padding: 35px 20px; border-radius: 32px; }
             .btn-group { grid-template-columns: 1fr; }
-            .sidebar { width: 260px; transform: translateX(-260px); }
-            .sidebar.active { transform: translateX(0); }
+            .sidebar { width: 280px; }
         }
     </style>
 </head>
@@ -207,11 +194,11 @@
     <div class="side-trigger" onclick="toggleSidebar()">
         <div class="arrow-icon"></div>
     </div>
-    <h2 style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Архив данных</h2>
+    <h2 style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-align: left;">Архив материалов</h2>
     <div class="lesson-list" id="lessonList"></div>
     
     <div class="theme-switch-wrapper">
-        <span style="font-size: 11px; font-weight: 700;">НОЧНОЙ РЕЖИМ</span>
+        <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Ночной режим</span>
         <label class="theme-switch">
             <input type="checkbox" id="themeCheckbox" checked onchange="document.body.classList.toggle('dark')">
             <span class="slider"></span>
@@ -223,21 +210,21 @@
 
 <div class="main">
     <div class="hero-card">
-        <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 1px;">ACADEMY PORTAL</span>
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">Portal Academy</span>
         <h1>Центр знаний</h1>
-        <p>Интеллектуальный доступ к репозиторию. Все учебные материалы обновлены и готовы к использованию.</p>
+        <p>Интеллектуальная система доступа к архивам уроков. Все данные синхронизированы.</p>
         
         <div class="btn-group">
-            <button class="btn btn-new" onclick="openByDate(0)">Актуальный</button>
+            <button class="btn btn-new" onclick="openByDate(0)">Последний</button>
             <button class="btn btn-prev" onclick="openByDate(1)">Предыдущий</button>
         </div>
-        <div id="status" style="margin-top: 25px; font-size: 10px; font-family: monospace; color: var(--text-muted); opacity: 0.7;">СИСТЕМА: ОНЛАЙН</div>
+        <div id="status" style="margin-top: 30px; font-size: 10px; font-family: monospace; color: var(--text-muted); text-transform: uppercase;">Система: Онлайн</div>
     </div>
 </div>
 
 <script>
-    const REPO_URL = "https://github.com/DailyWork-web/test-repository";
-    const FOLDER_URL = "https://github.com/DailyWork-web/test-repository/tree/main/%D1%83%D1%80%D0%BE%D0%BA%D0%B8";
+    const REPO_URL = "https://github.com/DailyWork-web/learning_portal_rep";
+    const FOLDER_URL = "https://github.com/DailyWork-web/learning_portal_rep/tree/main/%D0%A3%D1%80%D0%BE%D0%BA%D0%B8";
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
@@ -267,12 +254,12 @@
                 item.onclick = () => { window.open(file.download_url, '_blank'); toggleSidebar(); };
                 list.appendChild(item);
             });
-        } catch (e) { list.innerHTML = 'Ошибка синхронизации'; }
+        } catch (e) { list.innerHTML = 'Ошибка загрузки'; }
     }
 
     async function openByDate(index) {
         const status = document.getElementById('status');
-        status.innerText = "СИСТЕМА: ПОИСК...";
+        status.innerText = "Система: Поиск...";
         try {
             const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/commits?path=${encodeURIComponent(config.path)}&per_page=10`);
             const commits = await res.json();
@@ -290,9 +277,9 @@
             }
             if (found[index]) {
                 window.open(found[index].raw_url, '_blank');
-                status.innerText = "СИСТЕМА: ФАЙЛ НАЙДЕН";
-            } else { status.innerText = "СИСТЕМА: НЕ НАЙДЕНО"; }
-        } catch (e) { status.innerText = "СИСТЕМА: ОШИБКА API"; }
+                status.innerText = "Система: Ок";
+            } else { status.innerText = "Система: Не найдено"; }
+        } catch (e) { status.innerText = "Система: Ошибка"; }
     }
 
     loadFiles();
