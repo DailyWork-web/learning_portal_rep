@@ -6,6 +6,7 @@
     <title>Academy Premium Portal</title>
     <style>
         :root {
+            /* Светлая тема — матовый пепел и рубин */
             --primary: #9b111e;
             --primary-hover: #7a0d17;
             --bg: #d6d8db;
@@ -14,11 +15,13 @@
             --text-main: #2c2e31;
             --text-muted: #5a5f66;
             --border: rgba(0, 0, 0, 0.15);
-            --radius: 24px;
             --toggle-bg: #bdc3c7;
         }
 
         body.dark {
+            /* Темная тема */
+            --primary: #c41220;
+            --primary-hover: #a00e1a;
             --bg: #0d0e10;
             --sidebar-bg: #121214;
             --card-bg: #1c1e21;
@@ -32,24 +35,26 @@
             margin: 0;
             display: flex;
             height: 100vh;
+            width: 100vw;
             font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
             transition: background 0.5s ease;
             overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- БОКОВАЯ ПАНЕЛЬ --- */
+        /* --- БОКОВАЯ ПАНЕЛЬ (Исправлено позиционирование) --- */
         .sidebar {
             position: fixed;
-            left: -320px;
             top: 0;
             bottom: 0;
-            width: 280px; /* Чуть уже для мобильных */
+            left: 0;
+            width: 300px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
             z-index: 1000;
+            /* Сдвигаем всю панель влево на её ширину */
+            transform: translateX(-300px);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
@@ -58,13 +63,14 @@
         }
 
         .sidebar.active {
-            transform: translateX(320px);
-            box-shadow: 20px 0 60px rgba(0,0,0,0.15);
+            transform: translateX(0);
+            box-shadow: 20px 0 60px rgba(0,0,0,0.2);
         }
 
+        /* Кнопка-триггер (теперь точно внутри и привязана) */
         .side-trigger {
             position: absolute;
-            right: -40px;
+            right: -40px; /* Выходит за пределы панели */
             top: 30px;
             width: 40px;
             height: 40px;
@@ -76,43 +82,52 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
         }
 
         .arrow-icon {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             border-left: 2px solid var(--primary);
             border-bottom: 2px solid var(--primary);
             transform: rotate(225deg);
             transition: transform 0.4s ease;
         }
 
-        .sidebar.active .arrow-icon { transform: rotate(45deg); }
+        .sidebar.active .arrow-icon {
+            transform: rotate(45deg);
+        }
 
-        .lesson-list { flex: 1; overflow-y: auto; margin-top: 15px; }
-
+        /* --- КОНТЕНТ ПАНЕЛИ --- */
+        .lesson-list { flex: 1; overflow-y: auto; margin-top: 20px; }
         .lesson-item {
-            padding: 10px 14px;
-            margin-bottom: 6px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
             background: rgba(0,0,0,0.04);
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
             transition: 0.2s;
             border: 1px solid transparent;
         }
+        body.dark .lesson-item { background: rgba(255,255,255,0.03); }
+        .lesson-item:hover { border-color: var(--primary); background: rgba(0,0,0,0.08); }
 
-        body.dark .lesson-item { background: rgba(255,255,255,0.02); }
-        .lesson-item:hover { border-color: var(--primary); }
-
+        /* Переключатель темы */
         .theme-switch-wrapper {
             margin-top: auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 5px;
+            padding: 20px 0 10px 0;
             border-top: 1px solid var(--border);
         }
+        .theme-switch { position: relative; width: 44px; height: 22px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
         /* --- ГЛАВНАЯ КАРТОЧКА --- */
         .main { 
@@ -122,24 +137,21 @@
             align-items: center; 
             padding: 20px; 
             width: 100%;
+            height: 100%;
         }
 
         .hero-card {
             background: var(--card-bg);
-            padding: 50px;
-            border-radius: 40px;
+            padding: clamp(30px, 5vw, 60px);
+            border-radius: clamp(20px, 4vw, 40px);
             max-width: 480px;
             width: 100%;
             border: 1px solid var(--border);
             box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
         }
 
-        .hero-card span { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); }
-
-        /* Адаптивный шрифт для заголовка */
         .hero-card h1 { 
-            font-size: clamp(28px, 8vw, 42px); 
+            font-size: clamp(28px, 7vw, 42px); 
             margin: 10px 0; 
             color: var(--primary); 
             font-weight: 800; 
@@ -148,72 +160,45 @@
         .hero-card p { 
             font-size: clamp(14px, 4vw, 16px);
             color: var(--text-muted); 
-            line-height: 1.5; 
+            line-height: 1.6; 
             margin-bottom: 30px; 
         }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         .btn { 
-            padding: 14px; 
+            padding: 16px; 
             border-radius: 14px; 
             font-size: 13px; 
             font-weight: 700; 
             cursor: pointer; 
             border: none; 
-            transition: 0.3s; 
+            transition: 0.3s ease; 
             text-transform: uppercase; 
         }
 
         .btn-new { background: var(--primary); color: white; }
         .btn-new:hover { background: var(--primary-hover); transform: translateY(-2px); }
         
-        .btn-prev { 
-            background: transparent; 
-            color: var(--text-main); 
-            border: 2px solid var(--border); 
-        }
-        .btn-prev:hover { 
-            border-color: var(--primary); 
-            color: var(--primary); 
-            transform: translateY(-2px);
-        }
+        .btn-prev { background: transparent; color: var(--text-main); border: 2px solid var(--border); }
+        .btn-prev:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
 
-        .theme-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
-        .theme-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(22px); }
-
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 999; }
+        .overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(4px); 
+            z-index: 999; 
+        }
         .overlay.active { display: block; }
 
-        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ (ГЛАВНОЕ) --- */
+        /* Мобильные фиксы */
         @media (max-width: 600px) {
-            .hero-card { 
-                padding: 30px 20px; 
-                border-radius: 30px; 
-                margin: 0 10px;
-            }
-            .btn-group { 
-                grid-template-columns: 1fr; /* Кнопки одна под другой */
-                gap: 10px;
-            }
-            .sidebar {
-                width: 260px;
-            }
-            .sidebar.active {
-                transform: translateX(260px);
-            }
-            .side-trigger {
-                top: 20px;
-            }
-            #status { font-size: 9px; }
+            .btn-group { grid-template-columns: 1fr; }
+            .sidebar { width: 260px; transform: translateX(-260px); }
+            .sidebar.active { transform: translateX(0); }
         }
-
-        /* Защита от горизонтального скролла */
-        * { box-sizing: border-box; }
     </style>
 </head>
 <body class="dark">
@@ -222,11 +207,11 @@
     <div class="side-trigger" onclick="toggleSidebar()">
         <div class="arrow-icon"></div>
     </div>
-    <h2 style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Архив</h2>
+    <h2 style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Архив данных</h2>
     <div class="lesson-list" id="lessonList"></div>
     
     <div class="theme-switch-wrapper">
-        <span style="font-size: 11px; font-weight: 600;">ТЁМНАЯ ТЕМА</span>
+        <span style="font-size: 11px; font-weight: 700;">НОЧНОЙ РЕЖИМ</span>
         <label class="theme-switch">
             <input type="checkbox" id="themeCheckbox" checked onchange="document.body.classList.toggle('dark')">
             <span class="slider"></span>
@@ -238,15 +223,15 @@
 
 <div class="main">
     <div class="hero-card">
-        <span>ПОРТАЛ ACADEMY</span>
+        <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 1px;">ACADEMY PORTAL</span>
         <h1>Центр знаний</h1>
-        <p>Выберите нужный файл из архива или откройте последнее обновление в один клик.</p>
+        <p>Интеллектуальный доступ к репозиторию. Все учебные материалы обновлены и готовы к использованию.</p>
         
         <div class="btn-group">
             <button class="btn btn-new" onclick="openByDate(0)">Актуальный</button>
             <button class="btn btn-prev" onclick="openByDate(1)">Предыдущий</button>
         </div>
-        <div id="status" style="margin-top: 25px; font-size: 10px; font-family: monospace; color: var(--text-muted); text-transform: uppercase;">Система: Онлайн</div>
+        <div id="status" style="margin-top: 25px; font-size: 10px; font-family: monospace; color: var(--text-muted); opacity: 0.7;">СИСТЕМА: ОНЛАЙН</div>
     </div>
 </div>
 
@@ -282,12 +267,12 @@
                 item.onclick = () => { window.open(file.download_url, '_blank'); toggleSidebar(); };
                 list.appendChild(item);
             });
-        } catch (e) { list.innerHTML = 'Ошибка загрузки'; }
+        } catch (e) { list.innerHTML = 'Ошибка синхронизации'; }
     }
 
     async function openByDate(index) {
         const status = document.getElementById('status');
-        status.innerText = "Система: Поиск...";
+        status.innerText = "СИСТЕМА: ПОИСК...";
         try {
             const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/commits?path=${encodeURIComponent(config.path)}&per_page=10`);
             const commits = await res.json();
@@ -305,9 +290,9 @@
             }
             if (found[index]) {
                 window.open(found[index].raw_url, '_blank');
-                status.innerText = "Система: Ок";
-            } else { status.innerText = "Система: Ошибка"; }
-        } catch (e) { status.innerText = "Система: Ошибка"; }
+                status.innerText = "СИСТЕМА: ФАЙЛ НАЙДЕН";
+            } else { status.innerText = "СИСТЕМА: НЕ НАЙДЕНО"; }
+        } catch (e) { status.innerText = "СИСТЕМА: ОШИБКА API"; }
     }
 
     loadFiles();
