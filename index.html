@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Academy Premium Portal</title>
     <style>
         :root {
@@ -35,23 +35,25 @@
             font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
-            transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.5s ease;
             overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* --- БОКОВАЯ ПАНЕЛЬ --- */
         .sidebar {
             position: fixed;
             left: -320px;
             top: 0;
             bottom: 0;
-            width: 320px;
+            width: 280px; /* Чуть уже для мобильных */
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
             z-index: 1000;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-            padding: 40px 20px;
+            padding: 30px 20px;
             box-sizing: border-box;
         }
 
@@ -62,14 +64,14 @@
 
         .side-trigger {
             position: absolute;
-            right: -44px;
-            top: 40px;
-            width: 44px;
-            height: 44px;
+            right: -40px;
+            top: 30px;
+            width: 40px;
+            height: 40px;
             background: var(--sidebar-bg);
             border: 1px solid var(--border);
             border-left: none;
-            border-radius: 0 12px 12px 0;
+            border-radius: 0 10px 10px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -77,8 +79,8 @@
         }
 
         .arrow-icon {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-left: 2px solid var(--primary);
             border-bottom: 2px solid var(--primary);
             transform: rotate(225deg);
@@ -87,40 +89,41 @@
 
         .sidebar.active .arrow-icon { transform: rotate(45deg); }
 
-        .lesson-list { flex: 1; overflow-y: auto; margin-top: 20px; }
+        .lesson-list { flex: 1; overflow-y: auto; margin-top: 15px; }
 
         .lesson-item {
-            padding: 12px 15px;
-            margin-bottom: 8px;
+            padding: 10px 14px;
+            margin-bottom: 6px;
             background: rgba(0,0,0,0.04);
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             transition: 0.2s;
             border: 1px solid transparent;
         }
 
         body.dark .lesson-item { background: rgba(255,255,255,0.02); }
-        .lesson-item:hover { border-color: var(--primary); background: rgba(0,0,0,0.08); }
+        .lesson-item:hover { border-color: var(--primary); }
 
         .theme-switch-wrapper {
             margin-top: auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 10px;
+            padding: 15px 5px;
             border-top: 1px solid var(--border);
         }
 
-        .theme-switch-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .theme-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        /* --- ГЛАВНАЯ КАРТОЧКА --- */
+        .main { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px; 
+            width: 100%;
+        }
 
-        .main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .hero-card {
             background: var(--card-bg);
             padding: 50px;
@@ -129,17 +132,42 @@
             width: 100%;
             border: 1px solid var(--border);
             box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
 
-        .hero-card h1 { font-size: 40px; margin: 10px 0; color: var(--primary); font-weight: 800; }
-        .hero-card p { color: var(--text-muted); line-height: 1.6; margin-bottom: 35px; }
+        .hero-card span { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn { padding: 16px; border-radius: 16px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; }
+        /* Адаптивный шрифт для заголовка */
+        .hero-card h1 { 
+            font-size: clamp(28px, 8vw, 42px); 
+            margin: 10px 0; 
+            color: var(--primary); 
+            font-weight: 800; 
+        }
+
+        .hero-card p { 
+            font-size: clamp(14px, 4vw, 16px);
+            color: var(--text-muted); 
+            line-height: 1.5; 
+            margin-bottom: 30px; 
+        }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .btn { 
+            padding: 14px; 
+            border-radius: 14px; 
+            font-size: 13px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border: none; 
+            transition: 0.3s; 
+            text-transform: uppercase; 
+        }
+
         .btn-new { background: var(--primary); color: white; }
         .btn-new:hover { background: var(--primary-hover); transform: translateY(-2px); }
         
-        /* Исправленный блок кнопки "Предыдущий" */
         .btn-prev { 
             background: transparent; 
             color: var(--text-main); 
@@ -148,17 +176,44 @@
         .btn-prev:hover { 
             border-color: var(--primary); 
             color: var(--primary); 
-            background: rgba(155, 17, 30, 0.05);
             transform: translateY(-2px);
         }
 
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 999; }
+        .theme-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 999; }
         .overlay.active { display: block; }
 
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ (ГЛАВНОЕ) --- */
         @media (max-width: 600px) {
-            .hero-card { padding: 35px 20px; }
-            .btn-group { grid-template-columns: 1fr; }
+            .hero-card { 
+                padding: 30px 20px; 
+                border-radius: 30px; 
+                margin: 0 10px;
+            }
+            .btn-group { 
+                grid-template-columns: 1fr; /* Кнопки одна под другой */
+                gap: 10px;
+            }
+            .sidebar {
+                width: 260px;
+            }
+            .sidebar.active {
+                transform: translateX(260px);
+            }
+            .side-trigger {
+                top: 20px;
+            }
+            #status { font-size: 9px; }
         }
+
+        /* Защита от горизонтального скролла */
+        * { box-sizing: border-box; }
     </style>
 </head>
 <body class="dark">
@@ -167,11 +222,11 @@
     <div class="side-trigger" onclick="toggleSidebar()">
         <div class="arrow-icon"></div>
     </div>
-    <h2 style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Архив материалов</h2>
+    <h2 style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Архив</h2>
     <div class="lesson-list" id="lessonList"></div>
     
     <div class="theme-switch-wrapper">
-        <span class="theme-switch-label">Ночной режим</span>
+        <span style="font-size: 11px; font-weight: 600;">ТЁМНАЯ ТЕМА</span>
         <label class="theme-switch">
             <input type="checkbox" id="themeCheckbox" checked onchange="document.body.classList.toggle('dark')">
             <span class="slider"></span>
@@ -183,21 +238,21 @@
 
 <div class="main">
     <div class="hero-card">
-        <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">ПОРТАЛ ACADEMY</span>
+        <span>ПОРТАЛ ACADEMY</span>
         <h1>Центр знаний</h1>
-        <p>Интеллектуальная система доступа к обучающим материалам. Выберите нужный урок для начала работы.</p>
+        <p>Выберите нужный файл из архива или откройте последнее обновление в один клик.</p>
         
         <div class="btn-group">
-            <button class="btn btn-new" onclick="openByDate(0)">Последний</button>
+            <button class="btn btn-new" onclick="openByDate(0)">Актуальный</button>
             <button class="btn btn-prev" onclick="openByDate(1)">Предыдущий</button>
         </div>
-        <div id="status" style="margin-top: 30px; font-size: 10px; font-family: monospace; color: var(--text-muted); text-transform: uppercase;">Система: Онлайн</div>
+        <div id="status" style="margin-top: 25px; font-size: 10px; font-family: monospace; color: var(--text-muted); text-transform: uppercase;">Система: Онлайн</div>
     </div>
 </div>
 
 <script>
-    const REPO_URL = "https://github.com/DailyWork-web/learning_portal_rep";
-    const FOLDER_URL = "https://github.com/DailyWork-web/learning_portal_rep/tree/main/%D0%A3%D1%80%D0%BE%D0%BA%D0%B8";
+    const REPO_URL = "https://github.com/DailyWork-web/test-repository";
+    const FOLDER_URL = "https://github.com/DailyWork-web/test-repository/tree/main/%D1%83%D1%80%D0%BE%D0%BA%D0%B8";
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
@@ -250,8 +305,8 @@
             }
             if (found[index]) {
                 window.open(found[index].raw_url, '_blank');
-                status.innerText = "Система: Файл открыт";
-            } else { status.innerText = "Система: Не найдено"; }
+                status.innerText = "Система: Ок";
+            } else { status.innerText = "Система: Ошибка"; }
         } catch (e) { status.innerText = "Система: Ошибка"; }
     }
 
@@ -259,5 +314,4 @@
 </script>
 
 </body>
-
 </html>
